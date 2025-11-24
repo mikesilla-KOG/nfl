@@ -63,8 +63,8 @@ async function fetchStandings(league, forceRefresh = false) {
     contentDiv.style.display = 'none';
     
     try {
-        const port = league === 'nfl' ? 8000 : 8001;
-        const response = await fetch(`http://localhost:${port}/api/standings`);
+        const endpoint = `/api/standings/${league}`;
+        const response = await fetch(endpoint);
         const data = await response.json();
         
         if (league === 'nfl') {

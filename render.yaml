@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: nfl-nba-standings
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 combined_api.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0

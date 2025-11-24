@@ -52,7 +52,8 @@ class CombinedHandler(SimpleHTTPRequestHandler):
             super().do_GET()
 
 if __name__ == '__main__':
-    PORT = 8000
-    server = HTTPServer(('', PORT), CombinedHandler)
+    import os
+    PORT = int(os.environ.get('PORT', 8000))
+    server = HTTPServer(('0.0.0.0', PORT), CombinedHandler)
     print(f'Server running on port {PORT}...')
     server.serve_forever()
