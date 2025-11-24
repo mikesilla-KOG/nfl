@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Standings 2025-2026</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="league-selector">
+                <button class="league-button active" data-league="nfl">NFL</button>
+                <button class="league-button" data-league="nba">NBA</button>
+            </div>
+            <h1 id="league-title">NFL Team Standings</h1>
+            <p class="season" id="season-text">2025-2026 Season - Live Data</p>
+            <button id="refresh-btn" class="refresh-button" onclick="location.reload()">
+                <span class="refresh-icon">↻</span> Refresh Data
+            </button>
+        </header>
+
+        <nav class="tabs">
+            <button class="view-button active" data-view="division">Division</button>
+            <button class="view-button" data-view="conference">Conference</button>
+            <button class="view-button" data-view="league">League</button>
+            <button class="view-button" data-view="playoffs">Playoffs</button>
+        </nav>
+
+        <main>
+            <div id="loading" style="text-align: center; padding: 40px;">
+                <p>Loading standings...</p>
+            </div>
+            <div id="content" style="display: none;">
+                <div id="standings-container">
+                    <!-- Standings will be populated here -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p id="last-updated">Last updated: <span id="update-time">Loading...</span></p>
+            <p>Data sourced from <a href="https://plaintextsports.com" target="_blank">PlainTextSports.com</a></p>
+        </footer>
+    </div>
+
+    <script src="combined_script.js"></script>
+</body>
+</html>

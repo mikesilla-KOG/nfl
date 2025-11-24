@@ -350,3 +350,36 @@ footer {
         font-size: 1.2em;
     }
 }
+
+/* League Selector */
+.league-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.league-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 30px;
+    font-size: 1.1em;
+    font-weight: 700;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.league-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.league-button.active {
+    background: white;
+    color: #1e3c72;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+}
