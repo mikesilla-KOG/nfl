@@ -1,0 +1,352 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.season {
+    font-size: 1.1em;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-button {
+    background: white;
+    color: #2a5298;
+    border: 2px solid #667eea;
+    padding: 12px 30px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    background: #f0f0ff;
+    transform: translateY(-2px);
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.view-content {
+    display: none;
+}
+
+.view-content.active {
+    display: block;
+}
+
+.division-section {
+    margin-bottom: 30px;
+}
+
+.division-section h3 {
+    color: #667eea;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+}
+
+.conference-section {
+    margin-bottom: 40px;
+}
+
+.conference-section h2 {
+    color: #1e3c72;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
+    border-left: 6px solid #1e3c72;
+}
+
+.conferences-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.conference-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .conferences-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.playoff-section {
+    margin-bottom: 30px;
+}
+
+.playoff-section h3 {
+    color: #27ae60;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f0fff4;
+    border-left: 4px solid #27ae60;
+}
+
+.playoff-separator {
+    text-align: center;
+    color: #999;
+    font-size: 0.9em;
+    padding: 10px;
+    background: #f8f9fa;
+    margin: 10px 0;
+    border-top: 2px dashed #ddd;
+    border-bottom: 2px dashed #ddd;
+}
+
+.refresh-button {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.refresh-button:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.refresh-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.refresh-icon {
+    font-size: 1.3em;
+    display: inline-block;
+    animation: rotate 0.6s ease-in-out;
+}
+
+.refresh-button:active .refresh-icon {
+    animation: rotate 0.6s ease-in-out;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+main {
+    padding: 30px;
+}
+
+.conference {
+    margin-bottom: 40px;
+}
+
+.conference:last-child {
+    margin-bottom: 0;
+}
+
+.conference h2 {
+    color: #1e3c72;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #667eea;
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+th:first-child {
+    text-align: center;
+    width: 80px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    padding: 15px;
+    text-align: left;
+}
+
+td:first-child {
+    text-align: center;
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.1em;
+}
+
+td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+    text-align: center;
+    font-weight: 600;
+}
+
+.team-name {
+    font-weight: 600;
+    color: #2a5298;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-logo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.win-percentage {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.error-message {
+    background: #ff6b6b;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    margin: 20px 30px;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    .conference h2 {
+        font-size: 1.4em;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.9em;
+    }
+
+    main {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    th, td {
+        padding: 8px 5px;
+        font-size: 0.85em;
+    }
+
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    .conference h2 {
+        font-size: 1.2em;
+    }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Team Standings 2024-2025</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NFL Team Standings</h1>
+            <p class="season">2025-2026 Season - Live Data</p>
+            <button id="refresh-btn" class="refresh-button" onclick="location.reload()">
+                <span class="refresh-icon">↻</span> Refresh Data
+            </button>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-view="division">Division</button>
+            <button class="tab-button" data-view="conference">Conference</button>
+            <button class="tab-button" data-view="league">League</button>
+            <button class="tab-button" data-view="playoffs">Playoffs</button>
+        </nav>
+
+        <main>
+            <div id="division-view" class="view-content active">
+                <!-- Division view will be populated with side-by-side layout -->
+            </div>
+
+            <div id="conference-view" class="view-content">
+                <!-- Conference view with divisions will be populated here -->
+            </div>
+
+            <div id="league-view" class="view-content">
+                <section class="conference">
+                    <h2>NFL League Standings</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Team</th>
+                                    <th>W</th>
+                                    <th>L</th>
+                                    <th>T</th>
+                                    <th>Win %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="league-tbody">
+                                <!-- All teams will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="playoffs-view" class="view-content">
+                <section class="conference">
+                    <h2>AFC Playoff Picture</h2>
+                    <div id="afc-playoffs"></div>
+                </section>
+
+                <section class="conference">
+                    <h2>NFC Playoff Picture</h2>
+                    <div id="nfc-playoffs"></div>
+                </section>
+            </div>
+        </main>
+
+        <footer>
+            <p>2025-2026 NFL Season | Last Updated: November 24, 2025</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
