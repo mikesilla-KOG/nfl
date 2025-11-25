@@ -20,8 +20,10 @@ def fetch_nfl_standings():
     url = "https://plaintextsports.com/nfl/2025/standings"
     
     try:
-        response = requests.get(url)
+        print(f"Fetching from {url}...")
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
+        print("Data fetched successfully")
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
@@ -65,6 +67,8 @@ def parse_division_view(soup):
     """Parse division standings"""
     afc_divisions = {'East': [], 'North': [], 'South': [], 'West': []}
     nfc_divisions = {'East': [], 'North': [], 'South': [], 'West': []}
+    afc_abbrs = {'East': set(), 'North': set(), 'South': set(), 'West': set()}
+    nfc_abbrs = {'East': set(), 'North': set(), 'South': set(), 'West': set()}
     
     current_conference = None
     current_division = None
@@ -102,13 +106,15 @@ def parse_division_view(soup):
         team_data = parse_team_line(text)
         if team_data and current_conference and current_division:
             if current_conference == 'AFC':
-                # Only add if we have less than 4 teams in this division
-                if len(afc_divisions[current_division]) < 4 and team_data not in afc_divisions[current_division]:
+                # Only add if we have less than 4 teams in this division and not a duplicate
+                if len(afc_divisions[current_division]) < 4 and team_data['abbr'] not in afc_abbrs[current_division]:
                     afc_divisions[current_division].append(team_data)
+                    afc_abbrs[current_division].add(team_data['abbr'])
             elif current_conference == 'NFC':
-                # Only add if we have less than 4 teams in this division
-                if len(nfc_divisions[current_division]) < 4 and team_data not in nfc_divisions[current_division]:
+                # Only add if we have less than 4 teams in this division and not a duplicate
+                if len(nfc_divisions[current_division]) < 4 and team_data['abbr'] not in nfc_abbrs[current_division]:
                     nfc_divisions[current_division].append(team_data)
+                    nfc_abbrs[current_division].add(team_data['abbr'])
     
     return {'AFC': afc_divisions, 'NFC': nfc_divisions}
 
@@ -116,6 +122,8 @@ def parse_conference_view(soup):
     """Parse conference standings (all teams in each conference)"""
     afc_teams = []
     nfc_teams = []
+    afc_abbrs = set()
+    nfc_abbrs = set()
     
     current_conference = None
     in_conference_section = False
@@ -133,21 +141,25 @@ def parse_conference_view(soup):
             continue
         elif 'NFL:' in text or 'Division Leaders:' in text:
             in_conference_section = False
+            current_conference = None
             continue
         
-        if in_conference_section:
+        if in_conference_section and current_conference:
             team_data = parse_team_line(text)
             if team_data:
-                if current_conference == 'AFC' and team_data not in afc_teams:
+                if current_conference == 'AFC' and team_data['abbr'] not in afc_abbrs and len(afc_teams) < 16:
                     afc_teams.append(team_data)
-                elif current_conference == 'NFC' and team_data not in nfc_teams:
+                    afc_abbrs.add(team_data['abbr'])
+                elif current_conference == 'NFC' and team_data['abbr'] not in nfc_abbrs and len(nfc_teams) < 16:
                     nfc_teams.append(team_data)
+                    nfc_abbrs.add(team_data['abbr'])
     
     return {'AFC': afc_teams, 'NFC': nfc_teams}
 
 def parse_league_view(soup):
     """Parse league standings (all 32 teams)"""
     all_teams = []
+    all_abbrs = set()
     in_league_section = False
     
     for element in soup.find_all('div'):
@@ -162,8 +174,9 @@ def parse_league_view(soup):
         
         if in_league_section:
             team_data = parse_team_line(text)
-            if team_data and team_data not in all_teams:
+            if team_data and team_data['abbr'] not in all_abbrs:
                 all_teams.append(team_data)
+                all_abbrs.add(team_data['abbr'])
     
     return all_teams
 
@@ -171,6 +184,8 @@ def parse_playoffs_view(soup):
     """Parse playoff picture"""
     afc_playoffs = {'division_leaders': [], 'wild_card': [], 'eliminated': []}
     nfc_playoffs = {'division_leaders': [], 'wild_card': [], 'eliminated': []}
+    afc_abbrs = {'division_leaders': set(), 'wild_card': set(), 'eliminated': set()}
+    nfc_abbrs = {'division_leaders': set(), 'wild_card': set(), 'eliminated': set()}
     
     current_conference = None
     current_section = None
@@ -211,20 +226,22 @@ def parse_playoffs_view(soup):
                 'ties': ties
             }
             
-            if current_conference == 'AFC' and current_section:
-                if team_data not in afc_playoffs[current_section]:
-                    afc_playoffs[current_section].append(team_data)
-            elif current_conference == 'NFC' and current_section:
-                if team_data not in nfc_playoffs[current_section]:
-                    nfc_playoffs[current_section].append(team_data)
+            if current_conference == 'AFC' and current_section and abbr not in afc_abbrs[current_section]:
+                afc_playoffs[current_section].append(team_data)
+                afc_abbrs[current_section].add(abbr)
+            elif current_conference == 'NFC' and current_section and abbr not in nfc_abbrs[current_section]:
+                nfc_playoffs[current_section].append(team_data)
+                nfc_abbrs[current_section].add(abbr)
         else:
             # Regular team without seed (eliminated teams)
             team_data = parse_team_line(text)
             if team_data and current_section == 'eliminated':
-                if current_conference == 'AFC' and team_data not in afc_playoffs['eliminated']:
+                if current_conference == 'AFC' and team_data['abbr'] not in afc_abbrs['eliminated']:
                     afc_playoffs['eliminated'].append(team_data)
-                elif current_conference == 'NFC' and team_data not in nfc_playoffs['eliminated']:
+                    afc_abbrs['eliminated'].add(team_data['abbr'])
+                elif current_conference == 'NFC' and team_data['abbr'] not in nfc_abbrs['eliminated']:
                     nfc_playoffs['eliminated'].append(team_data)
+                    nfc_abbrs['eliminated'].add(team_data['abbr'])
     
     return {'AFC': afc_playoffs, 'NFC': nfc_playoffs}
 

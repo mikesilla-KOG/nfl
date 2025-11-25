@@ -64,8 +64,12 @@ async function fetchStandings(league, forceRefresh = false) {
     
     try {
         const endpoint = `/api/standings/${league}`;
+        console.log(`Fetching from ${endpoint}...`);
         const response = await fetch(endpoint);
         const data = await response.json();
+        
+        console.log(`Data received for ${league}:`, data);
+        console.log(`Conference data:`, data.conference);
         
         if (league === 'nfl') {
             nflData = data;
@@ -78,6 +82,7 @@ async function fetchStandings(league, forceRefresh = false) {
         loadingDiv.style.display = 'none';
         contentDiv.style.display = 'block';
     } catch (error) {
+        console.error('Fetch error:', error);
         loadingDiv.innerHTML = `<p>Error loading ${league.toUpperCase()} data: ${error.message}</p>`;
     }
 }
@@ -104,6 +109,13 @@ function renderCurrentView() {
 
 function renderDivisionView(data) {
     const container = document.getElementById('standings-container');
+    
+    // Validate data structure
+    if (!data || !data.division) {
+        container.innerHTML = '<p>No division data available</p>';
+        return;
+    }
+    
     const conferences = currentLeague === 'nfl' 
         ? [{ name: 'AFC', key: 'AFC' }, { name: 'NFC', key: 'NFC' }]
         : [{ name: 'Eastern', key: 'Eastern' }, { name: 'Western', key: 'Western' }];
@@ -125,7 +137,7 @@ function renderDivisionView(data) {
             : divisionOrder[conf.key];
         
         divisions.forEach(division => {
-            const teams = data.division[conf.key][division] || [];
+            const teams = (data.division[conf.key] && data.division[conf.key][division]) || [];
             html += `
                 <div class="division-section">
                     <h3 class="division-title">${conf.key} ${division}</h3>
@@ -166,6 +178,13 @@ function renderDivisionView(data) {
 
 function renderConferenceView(data) {
     const container = document.getElementById('standings-container');
+    
+    // Validate data structure
+    if (!data || !data.conference) {
+        container.innerHTML = '<p>No conference data available</p>';
+        return;
+    }
+    
     const conferences = currentLeague === 'nfl' 
         ? ['AFC', 'NFC']
         : ['Eastern', 'Western'];
@@ -213,6 +232,12 @@ function renderConferenceView(data) {
 
 function renderLeagueView(data) {
     const container = document.getElementById('standings-container');
+    
+    // Validate data structure
+    if (!data || !data.league) {
+        container.innerHTML = '<p>No league data available</p>';
+        return;
+    }
     const teams = data.league || [];
     
     let html = `
@@ -251,6 +276,13 @@ function renderLeagueView(data) {
 
 function renderPlayoffsView(data) {
     const container = document.getElementById('standings-container');
+    
+    // Validate data structure
+    if (!data || !data.playoffs) {
+        container.innerHTML = '<p>No playoffs data available</p>';
+        return;
+    }
+    
     const conferences = currentLeague === 'nfl' 
         ? ['AFC', 'NFC']
         : ['Eastern', 'Western'];
@@ -258,10 +290,16 @@ function renderPlayoffsView(data) {
     let html = '<div class="conferences-container">';
     
     conferences.forEach(conf => {
-        const teams = (data.playoffs && data.playoffs[conf]) || [];
+        const playoffData = data.playoffs[conf] || { division_leaders: [], wild_card: [], eliminated: [] };
+        
         html += `
             <div class="conference-section">
-                <h2 class="conference-title">${conf} Playoff Picture</h2>
+                <h2 class="conference-title">${conf} Playoff Picture</h2>`;
+        
+        // Division Leaders
+        if (playoffData.division_leaders && playoffData.division_leaders.length > 0) {
+            html += `
+                <h3 class="division-title">Division Leaders</h3>
                 <table class="standings-table">
                     <thead>
                         <tr>
@@ -273,23 +311,92 @@ function renderPlayoffsView(data) {
                         </tr>
                     </thead>
                     <tbody>`;
+            
+            playoffData.division_leaders.forEach(team => {
+                const logo = getTeamLogo(team.name);
+                html += `
+                    <tr>
+                        <td>${team.seed}</td>
+                        <td class="team-name">
+                            <img src="${logo}" alt="${team.name}" class="team-logo">
+                            ${team.name}
+                        </td>
+                        <td>${team.wins}</td>
+                        <td>${team.losses}</td>
+                        ${currentLeague === 'nfl' ? `<td>${team.ties || 0}</td>` : ''}
+                    </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+        }
         
-        teams.forEach((team, index) => {
-            const logo = getTeamLogo(team.name);
+        // Wild Card
+        if (playoffData.wild_card && playoffData.wild_card.length > 0) {
             html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td class="team-name">
-                        <img src="${logo}" alt="${team.name}" class="team-logo">
-                        ${team.name}
-                    </td>
-                    <td>${team.wins}</td>
-                    <td>${team.losses}</td>
-                    ${currentLeague === 'nfl' ? `<td>${team.ties || 0}</td>` : ''}
-                </tr>`;
-        });
+                <h3 class="division-title">Wild Card</h3>
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th>Seed</th>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            ${currentLeague === 'nfl' ? '<th>T</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            playoffData.wild_card.forEach(team => {
+                const logo = getTeamLogo(team.name);
+                html += `
+                    <tr>
+                        <td>${team.seed}</td>
+                        <td class="team-name">
+                            <img src="${logo}" alt="${team.name}" class="team-logo">
+                            ${team.name}
+                        </td>
+                        <td>${team.wins}</td>
+                        <td>${team.losses}</td>
+                        ${currentLeague === 'nfl' ? `<td>${team.ties || 0}</td>` : ''}
+                    </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+        }
         
-        html += `</tbody></table></div>`;
+        // Eliminated
+        if (playoffData.eliminated && playoffData.eliminated.length > 0) {
+            html += `
+                <h3 class="division-title">Eliminated</h3>
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>W</th>
+                            <th>L</th>
+                            ${currentLeague === 'nfl' ? '<th>T</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            playoffData.eliminated.forEach(team => {
+                const logo = getTeamLogo(team.name);
+                html += `
+                    <tr>
+                        <td class="team-name">
+                            <img src="${logo}" alt="${team.name}" class="team-logo">
+                            ${team.name}
+                        </td>
+                        <td>${team.wins}</td>
+                        <td>${team.losses}</td>
+                        ${currentLeague === 'nfl' ? `<td>${team.ties || 0}</td>` : ''}
+                    </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+        }
+        
+        html += `</div>`;
     });
     
     html += '</div>';
