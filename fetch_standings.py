@@ -209,7 +209,8 @@ def parse_playoffs_view(soup):
             continue
         
         # Parse team with seed number (e.g., "1:NE  10  2  0")
-        seed_match = re.search(r'^(\d+):([A-Z]{2,3})(?:-[a-z])?\s+(\d+)\s+(\d+)\s+(\d+)', text)
+        # Exclude teams with -e suffix (eliminated teams don't have seeds)
+        seed_match = re.search(r'^(\d+):([A-Z]{2,3})\s+(\d+)\s+(\d+)\s+(\d+)', text)
         if seed_match:
             seed = int(seed_match.group(1))
             abbr = seed_match.group(2)
@@ -236,7 +237,7 @@ def parse_playoffs_view(soup):
             # Regular team without seed - check for eliminated teams (marked with -e)
             # Only parse eliminated teams if they have the -e suffix
             eliminated_match = re.search(r'^([A-Z]{2,3})-e\s+(\d+)\s+(\d+)\s+(\d+)', text)
-            if eliminated_match and current_section == 'eliminated':
+            if eliminated_match:
                 abbr = eliminated_match.group(1)
                 wins = int(eliminated_match.group(2))
                 losses = int(eliminated_match.group(3))
