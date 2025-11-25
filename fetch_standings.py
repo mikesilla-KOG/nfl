@@ -229,12 +229,16 @@ def parse_playoffs_view(soup):
                 'ties': ties
             }
             
-            if current_conference == 'AFC' and current_section and abbr not in afc_abbrs[current_section]:
-                afc_playoffs[current_section].append(team_data)
-                afc_abbrs[current_section].add(abbr)
-            elif current_conference == 'NFC' and current_section and abbr not in nfc_abbrs[current_section]:
-                nfc_playoffs[current_section].append(team_data)
-                nfc_abbrs[current_section].add(abbr)
+            # Determine section based on seed number
+            # Seeds 1-4 are division leaders, 5-7 are wild card
+            target_section = 'division_leaders' if seed <= 4 else 'wild_card'
+            
+            if current_conference == 'AFC' and abbr not in afc_abbrs[target_section]:
+                afc_playoffs[target_section].append(team_data)
+                afc_abbrs[target_section].add(abbr)
+            elif current_conference == 'NFC' and abbr not in nfc_abbrs[target_section]:
+                nfc_playoffs[target_section].append(team_data)
+                nfc_abbrs[target_section].add(abbr)
         else:
             # Regular team without seed - check for eliminated teams (marked with -e)
             # Only parse eliminated teams if they have the -e suffix
