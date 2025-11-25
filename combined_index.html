@@ -10,10 +10,17 @@
     <div class="container">
         <header>
             <div class="league-selector">
-                <button class="league-button active" data-league="nfl">NFL</button>
-                <button class="league-button" data-league="nba">NBA</button>
+                <button class="league-button active" data-league="nfl">
+                    <span class="league-icon">🏈</span> NFL
+                </button>
+                <button class="league-button" data-league="nba">
+                    <span class="league-icon">🏀</span> NBA
+                </button>
             </div>
-            <h1 id="league-title">NFL Team Standings</h1>
+            <div class="header-title">
+                <span class="league-emblem" id="league-emblem">🏈</span>
+                <h1 id="league-title">NFL Team Standings</h1>
+            </div>
             <p class="season" id="season-text">2025-2026 Season - Live Data</p>
             <button id="refresh-btn" class="refresh-button" onclick="location.reload()">
                 <span class="refresh-icon">↻</span> Refresh Data

@@ -43,13 +43,16 @@ function switchLeague(league) {
     // Update header
     const title = document.getElementById('league-title');
     const seasonText = document.getElementById('season-text');
+    const emblem = document.getElementById('league-emblem');
     
     if (league === 'nfl') {
         title.textContent = 'NFL Team Standings';
         seasonText.textContent = '2025 Season';
+        emblem.textContent = '🏈';
     } else {
         title.textContent = 'NBA Team Standings';
         seasonText.textContent = '2025-2026 Season';
+        emblem.textContent = '🏀';
     }
     
     fetchStandings(league);
