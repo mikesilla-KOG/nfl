@@ -195,8 +195,10 @@ def parse_playoffs_view(soup):
         
         if 'American Football Conference' in text:
             current_conference = 'AFC'
+            current_section = None  # Reset section when switching conferences
         elif 'National Football Conference' in text:
             current_conference = 'NFC'
+            current_section = None  # Reset section when switching conferences
         
         if 'Division Leaders:' in text:
             current_section = 'division_leaders'
