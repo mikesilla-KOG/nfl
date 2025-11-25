@@ -9,6 +9,9 @@
 <body>
     <div class="container">
         <header>
+            <button id="refresh-btn" class="refresh-button" onclick="location.reload()">
+                <span class="refresh-icon">↻</span>
+            </button>
             <div class="league-selector">
                 <button class="league-button active" data-league="nfl">
                     <span class="league-icon">🏈</span> NFL
@@ -21,13 +24,17 @@
                 <span class="league-emblem" id="league-emblem">🏈</span>
                 <h1 id="league-title">NFL Team Standings</h1>
             </div>
-            <p class="season" id="season-text">2025-2026 Season - Live Data</p>
-            <button id="refresh-btn" class="refresh-button" onclick="location.reload()">
-                <span class="refresh-icon">↻</span> Refresh Data
-            </button>
         </header>
 
         <nav class="tabs">
+            <div class="season-info">
+                <span id="season-text">2025 Season</span>
+            </div>
+            <button class="view-button active" data-view="division">Division</button>
+            <button class="view-button" data-view="conference">Conference</button>
+            <button class="view-button" data-view="league">League</button>
+            <button class="view-button" data-view="playoffs">Playoffs</button>
+        </nav>
             <button class="view-button active" data-view="division">Division</button>
             <button class="view-button" data-view="conference">Conference</button>
             <button class="view-button" data-view="league">League</button>

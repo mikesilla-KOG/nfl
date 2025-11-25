@@ -24,7 +24,7 @@ body {
 header {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: white;
-    padding: 30px;
+    padding: 20px 30px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -52,12 +52,12 @@ header > * {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 10px;
+    gap: 15px;
+    margin-bottom: 5px;
 }
 
 .league-emblem {
-    font-size: 4em;
+    font-size: 3em;
     animation: float 3s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
@@ -68,7 +68,7 @@ header > * {
 }
 
 header h1 {
-    font-size: 2.5em;
+    font-size: 2em;
     margin: 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
@@ -83,10 +83,21 @@ header h1 {
 .tabs {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 10px;
     background: #f8f9fa;
-    padding: 20px;
+    padding: 15px 20px;
     border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.season-info {
+    position: absolute;
+    left: 20px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 600;
 }
 
 .tab-button {
@@ -189,25 +200,30 @@ header h1 {
 }
 
 .refresh-button {
-    background: linear-gradient(135deg, #27ae60, #229954);
+    background: rgba(255, 255, 255, 0.2);
     color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 1em;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    padding: 8px 16px;
+    font-size: 0.9em;
     font-weight: 600;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    display: inline-flex;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
 }
 
 .refresh-button:hover {
-    background: linear-gradient(135deg, #229954, #1e8449);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .refresh-button:active {
@@ -216,7 +232,7 @@ header h1 {
 }
 
 .refresh-icon {
-    font-size: 1.3em;
+    font-size: 1.2em;
     display: inline-block;
     animation: rotate 0.6s ease-in-out;
 }
