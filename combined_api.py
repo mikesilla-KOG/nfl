@@ -10,6 +10,10 @@ sys.path.insert(0, '/workspaces/nba')
 
 class CombinedHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
+        # Redirect root and old index.html to combined_index.html
+        if self.path == '/' or self.path == '/index.html':
+            self.path = '/combined_index.html'
+        
         if self.path == '/api/standings/nfl':
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
