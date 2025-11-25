@@ -233,15 +233,29 @@ def parse_playoffs_view(soup):
                 nfc_playoffs[current_section].append(team_data)
                 nfc_abbrs[current_section].add(abbr)
         else:
-            # Regular team without seed (eliminated teams)
-            team_data = parse_team_line(text)
-            if team_data and current_section == 'eliminated':
-                if current_conference == 'AFC' and team_data['abbr'] not in afc_abbrs['eliminated']:
+            # Regular team without seed - check for eliminated teams (marked with -e)
+            # Only parse eliminated teams if they have the -e suffix
+            eliminated_match = re.search(r'^([A-Z]{2,3})-e\s+(\d+)\s+(\d+)\s+(\d+)', text)
+            if eliminated_match and current_section == 'eliminated':
+                abbr = eliminated_match.group(1)
+                wins = int(eliminated_match.group(2))
+                losses = int(eliminated_match.group(3))
+                ties = int(eliminated_match.group(4))
+                
+                team_data = {
+                    'name': TEAM_NAMES.get(abbr, abbr),
+                    'abbr': abbr,
+                    'wins': wins,
+                    'losses': losses,
+                    'ties': ties
+                }
+                
+                if current_conference == 'AFC' and abbr not in afc_abbrs['eliminated']:
                     afc_playoffs['eliminated'].append(team_data)
-                    afc_abbrs['eliminated'].add(team_data['abbr'])
-                elif current_conference == 'NFC' and team_data['abbr'] not in nfc_abbrs['eliminated']:
+                    afc_abbrs['eliminated'].add(abbr)
+                elif current_conference == 'NFC' and abbr not in nfc_abbrs['eliminated']:
                     nfc_playoffs['eliminated'].append(team_data)
-                    nfc_abbrs['eliminated'].add(team_data['abbr'])
+                    nfc_abbrs['eliminated'].add(abbr)
     
     return {'AFC': afc_playoffs, 'NFC': nfc_playoffs}
 
