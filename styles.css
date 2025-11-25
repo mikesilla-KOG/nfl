@@ -89,15 +89,16 @@ header h1 {
     padding: 15px 20px;
     border-bottom: 2px solid #e0e0e0;
     flex-wrap: wrap;
-    position: relative;
 }
 
 .season-info {
     position: absolute;
     left: 20px;
+    top: 15px;
     font-size: 0.9em;
-    color: #666;
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
+    z-index: 10;
 }
 
 .tab-button {
