@@ -9,6 +9,41 @@ sys.path.insert(0, '/workspaces/nfl')
 sys.path.insert(0, '/workspaces/nba')
 
 class CombinedHandler(SimpleHTTPRequestHandler):
+    def get_placeholder_nba_data(self):
+        """Return placeholder NBA data structure"""
+        return {
+            'division': {
+                'Eastern': {
+                    'Atlantic': [],
+                    'Central': [],
+                    'Southeast': []
+                },
+                'Western': {
+                    'Northwest': [],
+                    'Pacific': [],
+                    'Southwest': []
+                }
+            },
+            'conference': {
+                'Eastern': [],
+                'Western': []
+            },
+            'league': [],
+            'playoffs': {
+                'Eastern': {
+                    'division_leaders': [],
+                    'wild_card': [],
+                    'eliminated': []
+                },
+                'Western': {
+                    'division_leaders': [],
+                    'wild_card': [],
+                    'eliminated': []
+                }
+            },
+            'message': 'NBA data not yet implemented. Install fetch_nba_standings.py to enable.'
+        }
+    
     def do_GET(self):
         # Redirect root and old index.html to combined_index.html
         if self.path == '/' or self.path == '/index.html':
@@ -35,16 +70,18 @@ class CombinedHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            
             try:
-                # Import from nba directory
-                nba_path = '/workspaces/nba'
-                if nba_path not in sys.path:
-                    sys.path.insert(0, nba_path)
-                    
-                import importlib
-                nba_fetch = importlib.import_module('fetch_standings')
-                data = nba_fetch.fetch_nba_standings()
+                # Try to import NBA fetch function if available
+                try:
+                    import fetch_nba_standings
+                    data = fetch_nba_standings.fetch_nba_standings()
+                except ImportError:
+                    # If no NBA module exists, return placeholder data
+                    data = self.get_placeholder_nba_data()
+                # Debug print the outgoing NBA data
+                print("\n--- NBA API OUTGOING DATA ---")
+                print(json.dumps(data, indent=2))
+                print("--- END NBA API OUTGOING DATA ---\n")
                 if data:
                     self.wfile.write(json.dumps(data).encode())
                 else:

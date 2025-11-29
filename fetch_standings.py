@@ -30,9 +30,20 @@ def fetch_nfl_standings():
         # Parse all different views
         division_data = parse_division_view(soup)
         conference_data = parse_conference_view(soup)
+        # Sort conference teams by wins (desc), losses (asc), ties (desc)
+        for conf in ['AFC', 'NFC']:
+            if conf in conference_data:
+                conference_data[conf] = sorted(
+                    conference_data[conf],
+                    key=lambda t: (
+                        -int(t.get('wins', 0)),
+                        int(t.get('losses', 0)),
+                        -int(t.get('ties', 0)),
+                        t.get('name', '')
+                    )
+                )
         league_data = parse_league_view(soup)
         playoffs_data = parse_playoffs_view(soup)
-        
         return {
             'division': division_data,
             'conference': conference_data,
