@@ -1,3 +1,63 @@
+def parse_division_view(soup):
+    """Parse division standings"""
+    # Map NBA Cup groups to traditional NBA divisions for frontend compatibility
+    east_map = {'A': 'Atlantic', 'B': 'Central', 'C': 'Southeast'}
+    west_map = {'A': 'Northwest', 'B': 'Pacific', 'C': 'Southwest'}
+    eastern_divisions = {'Atlantic': [], 'Central': [], 'Southeast': []}
+    western_divisions = {'Northwest': [], 'Pacific': [], 'Southwest': []}
+    eastern_abbrs = set()
+    western_abbrs = set()
+    current_conference = None
+    current_group = None
+    in_group = False
+    for element in soup.find_all('div'):
+        text = element.get_text().strip()
+        # Detect NBA Cup group headers
+        if text.startswith('East A:'):
+            current_conference, current_group, in_group = 'Eastern', 'A', True
+            continue
+        elif text.startswith('East B:'):
+            current_conference, current_group, in_group = 'Eastern', 'B', True
+            continue
+        elif text.startswith('East C:'):
+            current_conference, current_group, in_group = 'Eastern', 'C', True
+            continue
+        elif text.startswith('West A:'):
+            current_conference, current_group, in_group = 'Western', 'A', True
+            continue
+        elif text.startswith('West B:'):
+            current_conference, current_group, in_group = 'Western', 'B', True
+            continue
+        elif text.startswith('West C:'):
+            current_conference, current_group, in_group = 'Western', 'C', True
+            continue
+        elif text == '' or text.startswith('*') or 'plaintextsports' in text:
+            in_group = False
+            continue
+        # Parse teams in group
+        if in_group and current_conference and current_group:
+            group_match = re.search(r'\d+:\[?([A-Z]{2,3})\]?.*?(\d+)-(\d+)', text)
+            if group_match:
+                abbr = group_match.group(1)
+                wins = int(group_match.group(2))
+                losses = int(group_match.group(3))
+                team_data = {
+                    'name': TEAM_NAMES.get(abbr, abbr),
+                    'abbr': abbr,
+                    'wins': wins,
+                    'losses': losses
+                }
+                if current_conference == 'Eastern':
+                    div = east_map[current_group]
+                    if abbr not in eastern_abbrs:
+                        eastern_divisions[div].append(team_data)
+                        eastern_abbrs.add(abbr)
+                elif current_conference == 'Western':
+                    div = west_map[current_group]
+                    if abbr not in western_abbrs:
+                        western_divisions[div].append(team_data)
+                        western_abbrs.add(abbr)
+    return {'Eastern': eastern_divisions, 'Western': western_divisions}
 #!/usr/bin/env python3
 import requests
 from bs4 import BeautifulSoup
@@ -31,6 +91,27 @@ def fetch_nba_standings():
         # Parse all different views
         division_data = parse_division_view(soup)
         conference_data = parse_conference_view(soup)
+        # Sort conference arrays by wins (desc), losses (asc), then team name
+        for conf in conference_data:
+            conference_data[conf] = sorted(
+                conference_data[conf],
+                key=lambda t: (-int(t.get('wins', 0)), int(t.get('losses', 0)), t.get('name', ''))
+            )
+        # Build a lookup for correct wins/losses from conference data
+        conf_lookup = {t['abbr']: t for teams in conference_data.values() for t in teams}
+        # Overwrite division data with correct wins/losses from conference view
+        for conf in division_data:
+            for div in division_data[conf]:
+                for team in division_data[conf][div]:
+                    abbr = team.get('abbr')
+                    if abbr in conf_lookup:
+                        team['wins'] = conf_lookup[abbr]['wins']
+                        team['losses'] = conf_lookup[abbr]['losses']
+                # Sort each division by wins (desc), losses (asc), team name
+                division_data[conf][div] = sorted(
+                    division_data[conf][div],
+                    key=lambda t: (-int(t.get('wins', 0)), int(t.get('losses', 0)), t.get('name', ''))
+                )
         # Build league data from conference data (all teams, flat list, unique)
         league_teams = []
         seen = set()
@@ -40,6 +121,11 @@ def fetch_nba_standings():
                 if abbr and abbr not in seen:
                     league_teams.append(team)
                     seen.add(abbr)
+        # Sort league array by wins (desc), losses (asc), then team name
+        league_teams = sorted(
+            league_teams,
+            key=lambda t: (-int(t.get('wins', 0)), int(t.get('losses', 0)), t.get('name', ''))
+        )
         playoffs_data = parse_playoffs_view(soup)
         return {
             'division': division_data,
